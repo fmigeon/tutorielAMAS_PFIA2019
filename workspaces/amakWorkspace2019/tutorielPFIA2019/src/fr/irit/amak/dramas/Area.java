@@ -1,59 +1,26 @@
 package fr.irit.amak.dramas;
 
-import java.awt.Color;
-
-import fr.irit.smac.amak.ui.VUI;
-import fr.irit.smac.amak.ui.drawables.DrawableRectangle;
-
-/**
- * An area represents a small part of the world that can be scanned by a drone
- * in one cycle
- *
- */
 public class Area {
-	private static final int DEFAULT_SCAN_INTERVAL_TIME = 1000;
+
 	/**
 	 * The amount of time (in cycles) since when the area hasn't been scanned
 	 */
-	private double timeSinceLastSeen = DEFAULT_SCAN_INTERVAL_TIME;
+	protected double timeSinceLastSeen = DEFAULT_SCAN_INTERVAL_TIME;
 	/**
 	 * The X coordinate of the area
 	 */
-	private int x;
+	protected int x;
 	/**
 	 * The Y coordinate of the area
 	 */
-	private int y;
+	protected int y;
 	/**
 	 * The importance of the area. The higher this value, the more often this
 	 * area must be scanned.
 	 */
-	private double outdateFactor;
-	private double nextTimeSinceLastSeen = timeSinceLastSeen;
-	private DrawableRectangle drawable;
-
-	/**
-	 * Constructor of the area
-	 * 
-	 * @param x
-	 *            X coordinate
-	 * @param y
-	 *            Y coordinate
-	 */
-	public Area(int x, int y) {
-		// Set the position
-		this.x = x;
-		this.y = y;
-		// Set a high importance for a specific set of areas
-		if (x > 10 && x < 20 && y > 10 && y < 30)
-			this.outdateFactor = 10;
-		else
-			this.outdateFactor = 1;
-		
-
-		drawable = VUI.get().createRectangle(x*10, y*10, 10,10);
-		drawable.setLayer(0);
-	}
+	protected double outdateFactor;
+	protected double nextTimeSinceLastSeen = timeSinceLastSeen;
+	private static final int NORMAL_PRIORITY_FACTOR = 1;
 
 	/**
 	 * Getter for the X coordinate
@@ -92,31 +59,31 @@ public class Area {
 		return timeSinceLastSeen;
 	}
 
-	/**
-	 * Update the time since last scan at each cycle
-	 */
-	public void cycle() {
-		nextTimeSinceLastSeen++;
-		timeSinceLastSeen = nextTimeSinceLastSeen;
-
-		if (timeSinceLastSeen > DEFAULT_SCAN_INTERVAL_TIME)
-			timeSinceLastSeen = DEFAULT_SCAN_INTERVAL_TIME;
-		drawable.setColor(new Color((float) timeSinceLastSeen / DEFAULT_SCAN_INTERVAL_TIME, 1 - (float) timeSinceLastSeen / DEFAULT_SCAN_INTERVAL_TIME, 0f));
+	protected void setHigherImportanceZone(int x, int y) {
+		if (belongsToPriorityZone(x, y))
+			this.outdateFactor = HIGH_PRIORITY_FACTOR;
+		else
+			this.outdateFactor = NORMAL_PRIORITY_FACTOR;
 	}
 
-	/**
-	 * Manually set a hgh criticality to request a scan on a specific area
-	 */
-	public void setCritical() {
-		nextTimeSinceLastSeen  = DEFAULT_SCAN_INTERVAL_TIME;
+	private boolean belongsToPriorityZone(int x, int y) {
+		return x > PRIORITORY_ZONE_MIN_ABS && x < PRIORITORY_ZONE_MAX_ABS && y > PRIORITORY_ZONE_MIN_ORD && y < PRIORITORY_ZONE_MAX_ORD;
 	}
 
-	/**
-	 * Compute the criticality of the area based on the time since last scan
-	 * 
-	 * @return the criticality of the area
-	 */
-	public double computeCriticality() {
-		return Math.min(timeSinceLastSeen * outdateFactor / DEFAULT_SCAN_INTERVAL_TIME, 1);
+	private static final int HIGH_PRIORITY_FACTOR = 10;
+	private static final int PRIORITORY_ZONE_MAX_ORD = 30;
+	private static final int PRIORITORY_ZONE_MIN_ORD = 10;
+	private static final int PRIORITORY_ZONE_MAX_ABS = 20;
+	private static final int PRIORITORY_ZONE_MIN_ABS = 10;
+	protected static final int DEFAULT_SCAN_INTERVAL_TIME = 1000;
+
+	public Area(int x, int y) {
+		super();
+		// Set the position
+		this.x = x;
+		this.y = y;
+		setHigherImportanceZone(x, y);
+
 	}
+
 }

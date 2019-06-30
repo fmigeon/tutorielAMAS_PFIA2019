@@ -16,7 +16,7 @@ public class World extends Environment {
 	/**
 	 * Areas in the world
 	 */
-	private Area[][] areas;
+	private DrawableArea[][] areas;
 	/**
 	 * Number of areas in width
 	 */
@@ -31,10 +31,10 @@ public class World extends Environment {
 	 */
 	@Override
 	public void onInitialization() {
-		areas = new Area[HEIGHT][WIDTH];
+		areas = new DrawableArea[HEIGHT][WIDTH];
 		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < HEIGHT; y++) {
-				areas[y][x] = new Area(x, y);
+				areas[y][x] = new DrawableArea(x, y);
 			}
 		}
 	}
@@ -69,7 +69,7 @@ public class World extends Environment {
 	 *            the y coordinate
 	 * @return the area
 	 */
-	public Area getAreaByPosition(int dx, int dy) {
+	public DrawableArea getAreaByPosition(int dx, int dy) {
 
 		if (dx < 0 || dy < 0 || dx >= WIDTH || dy >= HEIGHT)
 			return null;
