@@ -61,10 +61,8 @@ public class Area {
 
 	/**
 	 * This method is called when the area is scanned
-	 * 
-	 * @param drone The drone which scans the area
 	 */
-	public void seen(Drone drone) {
+	public void scanned() {
 		nextTimeSinceLastSeen = 0;
 	}
 

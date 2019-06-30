@@ -285,7 +285,7 @@ public class Drone extends Agent<DrAmas, World> {
 		else if (dy > a.getY())
 			dy--;
 		currentArea = amas.getEnvironment().getAreaByPosition(dx, dy);
-		currentArea.seen(this);
+		currentArea.scanned();
 	}
 
 	/**
