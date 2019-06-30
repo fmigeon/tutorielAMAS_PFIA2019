@@ -29,7 +29,7 @@ public class Drone extends Agent<DrAmas, World> {
 	/**
 	 * The areas perceived by the agent during the perception phase
 	 */
-	private DrawableArea[][] view = new DrawableArea[VIEW_RADIUS * 2 + 1][VIEW_RADIUS * 2 + 1];
+	private ActiveDrawableArea[][] view = new ActiveDrawableArea[VIEW_RADIUS * 2 + 1][VIEW_RADIUS * 2 + 1];
 	/**
 	 * The drone perceived by the agent during the perception phase
 	 */
@@ -119,7 +119,7 @@ public class Drone extends Agent<DrAmas, World> {
 		// Check areas in a range of 3x3
 		for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
 			for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
-				DrawableArea areaByPosition = amas.getEnvironment().getAreaByPosition(dx + x, dy + y);
+				ActiveDrawableArea areaByPosition = amas.getEnvironment().getAreaByPosition(dx + x, dy + y);
 				// store the seen areas
 				view[y + VIEW_RADIUS][x + VIEW_RADIUS] = areaByPosition;
 				Drone[] agentsInArea = amas.getAgentsInArea(areaByPosition);
@@ -168,7 +168,7 @@ public class Drone extends Agent<DrAmas, World> {
 		/* DEBUT DU CODE A COLLER */
 
 		//Création de listes pour faciliter le tri
-		        List<DrawableArea> areas = new ArrayList<>();
+		        List<ActiveDrawableArea> areas = new ArrayList<>();
 		        List<Drone> visibleDrones = new ArrayList<>();
 
 		        for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
@@ -187,10 +187,10 @@ public class Drone extends Agent<DrAmas, World> {
 
 		//Tri des parcelles de la plus critique à la moins critique
 
-		        Collections.sort(areas, new Comparator<DrawableArea>() {
+		        Collections.sort(areas, new Comparator<ActiveDrawableArea>() {
 
 		            @Override
-		            public int compare(DrawableArea o1, DrawableArea o2) {
+		            public int compare(ActiveDrawableArea o1, ActiveDrawableArea o2) {
 		                return (int) (o2.computeCriticality()*10000 - o1.computeCriticality()*10000);
 		            }
 		        });
@@ -228,7 +228,7 @@ public class Drone extends Agent<DrAmas, World> {
 	 *            List of drones
 	 * @return the first area I'm the closest to
 	 */
-	private Area getAreaImTheClosestTo(List<DrawableArea> areas, List<Drone> drones) {
+	private Area getAreaImTheClosestTo(List<ActiveDrawableArea> areas, List<Drone> drones) {
 		for (Area area : areas) {
 			if (closestDrone(area, drones) == this)
 				return area;

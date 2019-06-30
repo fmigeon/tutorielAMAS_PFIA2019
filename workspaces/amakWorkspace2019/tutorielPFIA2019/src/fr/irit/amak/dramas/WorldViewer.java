@@ -89,7 +89,7 @@ public class WorldViewer extends DrawableUI<DrAmas>{
 	protected void onMouseDragged(int x, int y) {
 		for (int rx = -2; rx <= 2; rx++)
 			for (int ry = -2; ry <= 2; ry++)
-				getAmas().getEnvironment().getAreaByPosition(x / AREA_SIZE + rx, y / AREA_SIZE + ry).setCritical();
+				getAmas().getEnvironment().getAreaByPosition(x / AREA_SIZE + rx, y / AREA_SIZE + ry).becomeUrgent();
 	}
 
 }
