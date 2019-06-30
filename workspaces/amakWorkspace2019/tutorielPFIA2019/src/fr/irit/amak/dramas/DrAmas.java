@@ -45,7 +45,7 @@ public class DrAmas extends Amas<World> {
 	@Override
 	protected void onInitialAgentsCreation() {
 		for (int i = 0; i < INITIAL_DRONE_COUNT; i++)
-			new Drone(this, getEnvironment().getRandom().nextInt(World.WIDTH),
+			new DroneAgent(this, getEnvironment().getRandom().nextInt(World.WIDTH),
 					getEnvironment().getRandom().nextInt(World.HEIGHT));
 
 	}
@@ -71,7 +71,7 @@ public class DrAmas extends Amas<World> {
 		MainWindow.addMenuItem("Add 10 drones", l -> {
 			for (int i = 0; i < 10; i++) {
 
-				new Drone(drAmas, drAmas.getEnvironment().getRandom().nextInt(World.WIDTH),
+				new DroneAgent(drAmas, drAmas.getEnvironment().getRandom().nextInt(World.WIDTH),
 						drAmas.getEnvironment().getRandom().nextInt(World.HEIGHT));
 			}
 		});
@@ -122,12 +122,12 @@ public class DrAmas extends Amas<World> {
 	 *            The specified area
 	 * @return the list of drones in this area
 	 */
-	public Drone[] getAgentsInArea(Area areaByPosition) {
-		List<Drone> res = new ArrayList<>();
+	public DroneAgent[] getAgentsInArea(Area areaByPosition) {
+		List<DroneAgent> res = new ArrayList<>();
 		for (Agent<?, World> agent : agents) {
-			if (((Drone) agent).getCurrentArea() == areaByPosition)
-				res.add((Drone) agent);
+			if (((DroneAgent) agent).getCurrentArea() == areaByPosition)
+				res.add((DroneAgent) agent);
 		}
-		return res.toArray(new Drone[0]);
+		return res.toArray(new DroneAgent[0]);
 	}
 }
