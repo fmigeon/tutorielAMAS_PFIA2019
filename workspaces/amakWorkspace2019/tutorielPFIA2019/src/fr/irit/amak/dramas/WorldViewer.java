@@ -61,7 +61,7 @@ public class WorldViewer extends DrawableUI<DrAmas>{
 			// Draw agents
 			ArrayList<Agent<?, World>> agents = new ArrayList<>(getAmas().getAgents());
 			for (Agent<?, World> agent : agents) {
-				Drone drone = (Drone) agent;
+				DroneAgent drone = (DroneAgent) agent;
 				arg0.setColor(Color.white);
 				arg0.fillOval((int) discreteToTopContinuous(drone.getX()), (int) discreteToTopContinuous(drone.getY()),
 						AREA_SIZE, AREA_SIZE);

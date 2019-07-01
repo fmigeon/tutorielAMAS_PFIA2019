@@ -5,7 +5,7 @@ import java.util.List;
 import fr.irit.smac.amak.Agent;
 import fr.irit.smac.amak.Amas;
 
-public abstract class Drone extends Agent<DrAmas, World> {
+public class Drone {
 
 	/**
 	 * Current coordinate of the drone
@@ -37,13 +37,6 @@ public abstract class Drone extends Agent<DrAmas, World> {
 	 */
 	protected Area currentArea;
 
-	public Drone(Amas amas, Object... params) {
-		super(amas, params);
-	}
-
-	protected void initCurrentArea() {
-		currentArea = amas.getEnvironment().getAreaByPosition(dx, dy);
-	}
 
 	/**
 	 * Getter for the x coordinate
@@ -64,31 +57,6 @@ public abstract class Drone extends Agent<DrAmas, World> {
 	}
 
 	/**
-	 * Clear the neighbors list
-	 */
-	protected void clearNeighbors() {
-		neighborhood.clear();
-	}
-
-	/**
-	 * From an ordered list of areas (areas) and a list of drone, return the first
-	 * area I'm the closest to.
-	 * 
-	 * @param areas
-	 *            Ordered list of areas
-	 * @param drones
-	 *            List of drones
-	 * @return the first area I'm the closest to
-	 */
-	protected Area getAreaImTheClosestTo(List<ActiveDrawableArea> areas, List<DroneAgent> drones) {
-		for (Area area : areas) {
-			if (closestDrone(area, drones) == this)
-				return area;
-		}
-		return areas.get(getAmas().getEnvironment().getRandom().nextInt(areas.size()));
-	}
-
-	/**
 	 * Find the closest drone from an area within a given list of drones
 	 * 
 	 * @param area
@@ -97,10 +65,10 @@ public abstract class Drone extends Agent<DrAmas, World> {
 	 *            The list of drones
 	 * @return the closest drone
 	 */
-	private DroneAgent closestDrone(Area area, List<DroneAgent> drones) {
+	protected Drone closestDrone(Area area, List<Drone> drones) {
 		double distance = Double.POSITIVE_INFINITY;
-		DroneAgent closest = this;
-		for (DroneAgent drone : drones) {
+		Drone closest = this;
+		for (Drone drone : drones) {
 			if (drone.distanceTo(area) < distance) {
 				distance = drone.distanceTo(area);
 				closest = drone;

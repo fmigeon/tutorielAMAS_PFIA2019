@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.irit.smac.amak.Agent;
 import fr.irit.smac.amak.ui.VUI;
 import fr.irit.smac.amak.ui.drawables.DrawableRectangle;
 
@@ -13,7 +14,9 @@ import fr.irit.smac.amak.ui.drawables.DrawableRectangle;
  * This class represent an agent of the system DrAmas
  *
  */
-public class DroneAgent extends Drone {
+public class DroneAgent extends Agent<DrAmas, World> {
+	private static final int VIEW_RADIUS = Drone.VIEW_RADIUS;
+	private Drone droneDelegate = new Drone();
 	private DrawableRectangle drawable;
 
 	/**
@@ -30,15 +33,34 @@ public class DroneAgent extends Drone {
 		super(amas, startX, startY);
 	}
 
+	/**
+	 * Getter for the x coordinate
+	 * 
+	 * @return the x coordinate
+	 */
+	public int getX() {
+		return droneDelegate.dx;
+	}
+
+	/**
+	 * Getter for the y coordinate
+	 * 
+	 * @return the y coordinate
+	 */
+	public int getY() {
+		return droneDelegate.dy;
+	}
+
+
 	@Override
 	protected void onInitialization() {
 
-		dx = (int) params[0];
-		dy = (int) params[1];
+		droneDelegate.dx = (int) params[0];
+		droneDelegate.dy = (int) params[1];
 	}
 	@Override
 	protected void onRenderingInitialization() {
-		drawable = VUI.get().createRectangle(dx*10, dy*10, 10,10);
+		drawable = VUI.get().createRectangle(droneDelegate.dx*10, droneDelegate.dy*10, 10,10);
 		drawable.setLayer(1);
 		drawable.setColor(Color.WHITE);
 	}
@@ -69,12 +91,12 @@ public class DroneAgent extends Drone {
 		// Check areas in a range of VIEW_RADIUSxVIEW_RADIUS
 		for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
 			for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
-				ActiveDrawableArea areaByPosition = amas.getEnvironment().getAreaByPosition(dx + x, dy + y);
+				ActiveDrawableArea areaByPosition = amas.getEnvironment().getAreaByPosition(droneDelegate.dx + x, droneDelegate.dy + y);
 				// store the seen areas
-				view[y + VIEW_RADIUS][x + VIEW_RADIUS] = areaByPosition;
+				droneDelegate.view[y + VIEW_RADIUS][x + VIEW_RADIUS] = areaByPosition;
 				DroneAgent[] agentsInArea = amas.getAgentsInArea(areaByPosition);
 				// store the seen agents
-				neighborsView[y + VIEW_RADIUS][x + VIEW_RADIUS] = agentsInArea;
+				droneDelegate.neighborsView[y + VIEW_RADIUS][x + VIEW_RADIUS] = agentsInArea;
 				// Set seen agents as neighbors
 				addNeighbor(agentsInArea);
 			}
@@ -86,14 +108,14 @@ public class DroneAgent extends Drone {
 	 */
 	@Override
 	protected void onAct() {
-		if (targetArea != null) {
-			moveToward(targetArea);
+		if (droneDelegate.targetArea != null) {
+			moveToward(droneDelegate.targetArea);
 		}
 	}
 
 	@Override
 	protected void onUpdateRender() {
-		drawable.move(dx*10, dy*10);
+		drawable.move(droneDelegate.dx*10, droneDelegate.dy*10);
 	}
 
 	/**
@@ -112,17 +134,17 @@ public class DroneAgent extends Drone {
 
 		//Création de listes pour faciliter le tri
 		        List<ActiveDrawableArea> areas = new ArrayList<>();
-		        List<DroneAgent> visibleDrones = new ArrayList<>();
+		        List<Drone> visibleDrones = new ArrayList<>();
 
 		        for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
 		            for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
-		                if (view[y + VIEW_RADIUS][x + VIEW_RADIUS] != null)
-		                    areas.add(view[y + VIEW_RADIUS][x + VIEW_RADIUS]);
-		                if (neighborsView[y + VIEW_RADIUS][x + VIEW_RADIUS] !=
+		                if (droneDelegate.view[y + VIEW_RADIUS][x + VIEW_RADIUS] != null)
+		                    areas.add(droneDelegate.view[y + VIEW_RADIUS][x + VIEW_RADIUS]);
+		                if (droneDelegate.neighborsView[y + VIEW_RADIUS][x + VIEW_RADIUS] !=
 		null) {
-		                    for (DroneAgent drone : neighborsView[y + VIEW_RADIUS][x 
+		                    for (DroneAgent drone : droneDelegate.neighborsView[y + VIEW_RADIUS][x 
 		+ VIEW_RADIUS]) {
-		                        visibleDrones.add(drone);
+		                        visibleDrones.add(drone.droneDelegate);
 		                    }
 		                }
 		            }
@@ -156,7 +178,7 @@ public class DroneAgent extends Drone {
 
 
 
-		        targetArea = a;
+		        droneDelegate.targetArea = a;
 
 		/* FIN DU CODE A COLLER */
 	}
@@ -169,16 +191,16 @@ public class DroneAgent extends Drone {
 	 *            The target area
 	 */
 	protected void moveToward(Area a) {
-		if (dx < a.getX())
-			dx++;
-		else if (dx > a.getX())
-			dx--;
-		if (dy < a.getY())
-			dy++;
-		else if (dy > a.getY())
-			dy--;
+		if (droneDelegate.dx < a.getX())
+			droneDelegate.dx++;
+		else if (droneDelegate.dx > a.getX())
+			droneDelegate.dx--;
+		if (droneDelegate.dy < a.getY())
+			droneDelegate.dy++;
+		else if (droneDelegate.dy > a.getY())
+			droneDelegate.dy--;
 		initCurrentArea();
-		currentArea.scanned();
+		droneDelegate.currentArea.scanned();
 	}
 
 	/**
@@ -187,6 +209,35 @@ public class DroneAgent extends Drone {
 	 * @return the current area
 	 */
 	public Area getCurrentArea() {
-		return currentArea;
+		return droneDelegate.currentArea;
+	}
+
+	protected void initCurrentArea() {
+		droneDelegate.currentArea = amas.getEnvironment().getAreaByPosition(droneDelegate.dx, droneDelegate.dy);
+	}
+
+	/**
+	 * Clear the neighbors list
+	 */
+	protected void clearNeighbors() {
+		neighborhood.clear();
+	}
+
+	/**
+	 * From an ordered list of areas (areas) and a list of drone, return the first
+	 * area I'm the closest to.
+	 * 
+	 * @param areas
+	 *            Ordered list of areas
+	 * @param drones
+	 *            List of drones
+	 * @return the first area I'm the closest to
+	 */
+	protected Area getAreaImTheClosestTo(List<ActiveDrawableArea> areas, List<Drone> drones) {
+		for (Area area : areas) {
+			if (droneDelegate.closestDrone(area, drones) == droneDelegate)
+				return area;
+		}
+		return areas.get(getAmas().getEnvironment().getRandom().nextInt(areas.size()));
 	}
 }
