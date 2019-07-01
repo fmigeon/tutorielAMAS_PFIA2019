@@ -45,6 +45,15 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	protected void onDecide() {
 		// TODO Fill
 		/* DEBUT DU CODE A COLLER */
+
+		// Création de listes pour faciliter le tri
+
+		// Tri des parcelles de la plus critique à la moins critique
+
+
+		// On choisit la parcelle la plus critique ET dont je suis le plus proche
+
+
 		/* FIN DU CODE A COLLER */
 	}
 	
