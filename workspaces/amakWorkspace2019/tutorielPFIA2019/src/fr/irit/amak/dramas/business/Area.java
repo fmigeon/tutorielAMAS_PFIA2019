@@ -1,4 +1,4 @@
-package fr.irit.amak.dramas;
+package fr.irit.amak.dramas.business;
 
 /**
  * An area represents a small part of the world that can be scanned by a drone

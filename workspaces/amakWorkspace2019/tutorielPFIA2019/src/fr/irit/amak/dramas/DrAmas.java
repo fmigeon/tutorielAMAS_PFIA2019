@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 import java.util.Random;
 
+import fr.irit.amak.dramas.business.Area;
 import fr.irit.smac.amak.Agent;
 import fr.irit.smac.amak.Amas;
 import fr.irit.smac.amak.Scheduling;

@@ -1,5 +1,6 @@
 package fr.irit.amak.dramas;
 
+import fr.irit.amak.dramas.business.Area;
 import fr.irit.smac.amak.Environment;
 import fr.irit.smac.amak.Scheduling;
 

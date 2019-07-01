@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import fr.irit.amak.dramas.business.Area;
 import fr.irit.smac.amak.Agent;
 import fr.irit.smac.amak.Scheduling;
 import fr.irit.smac.amak.ui.DrawableUI;

@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.irit.amak.dramas.business.Area;
+import fr.irit.amak.dramas.business.Drone;
 import fr.irit.smac.amak.Agent;
 import fr.irit.smac.amak.ui.VUI;
 import fr.irit.smac.amak.ui.drawables.DrawableRectangle;
@@ -22,12 +24,9 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	/**
 	 * Constructor of the drone
 	 * 
-	 * @param amas
-	 *            The AMAS the drone belongs to
-	 * @param startX
-	 *            The initial x coordinate of the drone
-	 * @param startY
-	 *            The initial y coordinate of the drone
+	 * @param amas   The AMAS the drone belongs to
+	 * @param startX The initial x coordinate of the drone
+	 * @param startY The initial y coordinate of the drone
 	 */
 	public DroneAgent(DrAmas amas, int startX, int startY) {
 		super(amas, startX, startY);
@@ -39,7 +38,7 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 * @return the x coordinate
 	 */
 	public int getX() {
-		return droneDelegate.dx;
+		return droneDelegate.getX();
 	}
 
 	/**
@@ -48,19 +47,21 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 * @return the y coordinate
 	 */
 	public int getY() {
-		return droneDelegate.dy;
+		return droneDelegate.getY();
 	}
-
 
 	@Override
 	protected void onInitialization() {
-
-		droneDelegate.dx = (int) params[0];
-		droneDelegate.dy = (int) params[1];
+		if (droneDelegate == null) {
+			droneDelegate = new Drone();
+		} else {
+			droneDelegate.initPosition((int) params[0], (int) params[1]);
+		}
 	}
+
 	@Override
 	protected void onRenderingInitialization() {
-		drawable = VUI.get().createRectangle(droneDelegate.dx*10, droneDelegate.dy*10, 10,10);
+		drawable = VUI.get().createRectangle(droneDelegate.getX() * 10, droneDelegate.getY() * 10, 10, 10);
 		drawable.setLayer(1);
 		drawable.setColor(Color.WHITE);
 	}
@@ -70,7 +71,8 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 */
 	@Override
 	protected void onReady() {
-		initCurrentArea();
+		Area newCurrentArea = amas.getEnvironment().getAreaByPosition(droneDelegate.getX(), droneDelegate.getY());
+		droneDelegate.setCurrentArea(newCurrentArea);
 	}
 
 	/**
@@ -91,12 +93,13 @@ public class DroneAgent extends Agent<DrAmas, World> {
 		// Check areas in a range of VIEW_RADIUSxVIEW_RADIUS
 		for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
 			for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
-				ActiveDrawableArea areaByPosition = amas.getEnvironment().getAreaByPosition(droneDelegate.dx + x, droneDelegate.dy + y);
+				ActiveDrawableArea areaByPosition = amas.getEnvironment().getAreaByPosition(droneDelegate.getX() + x,
+						droneDelegate.getY() + y);
 				// store the seen areas
-				droneDelegate.view[y + VIEW_RADIUS][x + VIEW_RADIUS] = areaByPosition;
+				droneDelegate.getView()[y + VIEW_RADIUS][x + VIEW_RADIUS] = areaByPosition;
 				DroneAgent[] agentsInArea = amas.getAgentsInArea(areaByPosition);
 				// store the seen agents
-				droneDelegate.neighborsView[y + VIEW_RADIUS][x + VIEW_RADIUS] = agentsInArea;
+				droneDelegate.getNeighborsView()[y + VIEW_RADIUS][x + VIEW_RADIUS] = agentsInArea;
 				// Set seen agents as neighbors
 				addNeighbor(agentsInArea);
 			}
@@ -108,14 +111,14 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 */
 	@Override
 	protected void onAct() {
-		if (droneDelegate.targetArea != null) {
-			moveToward(droneDelegate.targetArea);
+		if (droneDelegate.getTargetArea() != null) {
+			moveToward(droneDelegate.getTargetArea());
 		}
 	}
 
 	@Override
 	protected void onUpdateRender() {
-		drawable.move(droneDelegate.dx*10, droneDelegate.dy*10);
+		drawable.move(droneDelegate.getX() * 10, droneDelegate.getY() * 10);
 	}
 
 	/**
@@ -132,53 +135,47 @@ public class DroneAgent extends Agent<DrAmas, World> {
 		// TODO Fill
 		/* DEBUT DU CODE A COLLER */
 
-		//Création de listes pour faciliter le tri
-		        List<ActiveDrawableArea> areas = new ArrayList<>();
-		        List<Drone> visibleDrones = new ArrayList<>();
+		// Création de listes pour faciliter le tri
+		List<ActiveDrawableArea> areas = new ArrayList<>();
+		List<Drone> visibleDrones = new ArrayList<>();
 
-		        for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
-		            for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
-		                if (droneDelegate.view[y + VIEW_RADIUS][x + VIEW_RADIUS] != null)
-		                    areas.add(droneDelegate.view[y + VIEW_RADIUS][x + VIEW_RADIUS]);
-		                if (droneDelegate.neighborsView[y + VIEW_RADIUS][x + VIEW_RADIUS] !=
-		null) {
-		                    for (DroneAgent drone : droneDelegate.neighborsView[y + VIEW_RADIUS][x 
-		+ VIEW_RADIUS]) {
-		                        visibleDrones.add(drone.droneDelegate);
-		                    }
-		                }
-		            }
-		        }
+		for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
+			for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
+				if (droneDelegate.getView()[y + VIEW_RADIUS][x + VIEW_RADIUS] != null)
+					areas.add(droneDelegate.getView()[y + VIEW_RADIUS][x + VIEW_RADIUS]);
+				if (droneDelegate.getNeighborsView()[y + VIEW_RADIUS][x + VIEW_RADIUS] != null) {
+					for (DroneAgent drone : droneDelegate.getNeighborsView()[y + VIEW_RADIUS][x + VIEW_RADIUS]) {
+						visibleDrones.add(drone.droneDelegate);
+					}
+				}
+			}
+		}
 
-		//Tri des parcelles de la plus critique à la moins critique
+		// Tri des parcelles de la plus critique à la moins critique
 
-		        Collections.sort(areas, new Comparator<ActiveDrawableArea>() {
+		Collections.sort(areas, new Comparator<ActiveDrawableArea>() {
 
-		            @Override
-		            public int compare(ActiveDrawableArea o1, ActiveDrawableArea o2) {
-		                return (int) (o2.computeCriticality()*10000 - o1.computeCriticality()*10000);
-		            }
-		        });
+			@Override
+			public int compare(ActiveDrawableArea o1, ActiveDrawableArea o2) {
+				return (int) (o2.computeCriticality() * 10000 - o1.computeCriticality() * 10000);
+			}
+		});
 
+		// On choisit la parcelle la plus critique ET dont je suis le plus proche
+		Area a = getAreaImTheClosestTo(areas, visibleDrones);
 
-		//On choisit la parcelle la plus critique ET dont je suis le plus proche
-		        Area a = getAreaImTheClosestTo(areas, visibleDrones);
-
-
-		//décommenter les parties suivantes pour essayer des comportements aléatoires
-		        //Comportement aléatoire 1
+		// décommenter les parties suivantes pour essayer des comportements aléatoires
+		// Comportement aléatoire 1
 //		         a = areas.get(amas.getRandom().nextInt(areas.size()));
 
-		        //Comportement aléatoire 2
+		// Comportement aléatoire 2
 //		        if (getCurrentArea().getX() == targetX && getCurrentArea().getY() == targetY) {
 //		            targetX = amas.getRandom().nextInt(World.WIDTH);
 //		            targetY = amas.getRandom().nextInt(World.HEIGHT);
 //		        }
 //		        a = amas.getEnvironment().getAreaByPosition(targetX, targetY);
 
-
-
-		        droneDelegate.targetArea = a;
+		droneDelegate.setTargetArea(a);
 
 		/* FIN DU CODE A COLLER */
 	}
@@ -187,20 +184,13 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 * Move toward an area and scan the reached area. A drone can only move at 1
 	 * area /cycle so the target area may not be the one seen.
 	 * 
-	 * @param a
-	 *            The target area
+	 * @param a The target area
 	 */
 	protected void moveToward(Area a) {
-		if (droneDelegate.dx < a.getX())
-			droneDelegate.dx++;
-		else if (droneDelegate.dx > a.getX())
-			droneDelegate.dx--;
-		if (droneDelegate.dy < a.getY())
-			droneDelegate.dy++;
-		else if (droneDelegate.dy > a.getY())
-			droneDelegate.dy--;
-		initCurrentArea();
-		droneDelegate.currentArea.scanned();
+		droneDelegate.moveToward(a);
+		Area newCurrentArea = amas.getEnvironment().getAreaByPosition(droneDelegate.getX(), droneDelegate.getY());
+		droneDelegate.setCurrentArea(newCurrentArea);
+		newCurrentArea.scanned();
 	}
 
 	/**
@@ -209,11 +199,7 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 * @return the current area
 	 */
 	public Area getCurrentArea() {
-		return droneDelegate.currentArea;
-	}
-
-	protected void initCurrentArea() {
-		droneDelegate.currentArea = amas.getEnvironment().getAreaByPosition(droneDelegate.dx, droneDelegate.dy);
+		return droneDelegate.getCurrentArea();
 	}
 
 	/**
@@ -227,10 +213,8 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	 * From an ordered list of areas (areas) and a list of drone, return the first
 	 * area I'm the closest to.
 	 * 
-	 * @param areas
-	 *            Ordered list of areas
-	 * @param drones
-	 *            List of drones
+	 * @param areas  Ordered list of areas
+	 * @param drones List of drones
 	 * @return the first area I'm the closest to
 	 */
 	protected Area getAreaImTheClosestTo(List<ActiveDrawableArea> areas, List<Drone> drones) {

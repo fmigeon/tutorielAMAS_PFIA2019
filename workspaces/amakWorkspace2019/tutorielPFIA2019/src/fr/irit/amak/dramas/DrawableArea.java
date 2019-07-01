@@ -1,5 +1,6 @@
 package fr.irit.amak.dramas;
 
+import fr.irit.amak.dramas.business.Area;
 import fr.irit.smac.amak.ui.VUI;
 import fr.irit.smac.amak.ui.drawables.DrawableRectangle;
 
