@@ -45,49 +45,6 @@ public class DroneAgent extends Agent<DrAmas, World> {
 	protected void onDecide() {
 		// TODO Fill
 		/* DEBUT DU CODE A COLLER */
-
-		// Création de listes pour faciliter le tri
-		List<ActiveDrawableArea> areas = new ArrayList<>();
-		List<Drone> visibleDrones = new ArrayList<>();
-
-		for (int x = -VIEW_RADIUS; x <= VIEW_RADIUS; x++) {
-			for (int y = -VIEW_RADIUS; y <= VIEW_RADIUS; y++) {
-				if (droneDelegate.getView()[y + VIEW_RADIUS][x + VIEW_RADIUS] != null)
-					areas.add(droneDelegate.getView()[y + VIEW_RADIUS][x + VIEW_RADIUS]);
-				if (droneDelegate.getNeighborsView()[y + VIEW_RADIUS][x + VIEW_RADIUS] != null) {
-					for (DroneAgent drone : droneDelegate.getNeighborsView()[y + VIEW_RADIUS][x + VIEW_RADIUS]) {
-						visibleDrones.add(drone.droneDelegate);
-					}
-				}
-			}
-		}
-
-		// Tri des parcelles de la plus critique à la moins critique
-
-		Collections.sort(areas, new Comparator<ActiveDrawableArea>() {
-
-			@Override
-			public int compare(ActiveDrawableArea o1, ActiveDrawableArea o2) {
-				return (int) (o2.computeCriticality() * 10000 - o1.computeCriticality() * 10000);
-			}
-		});
-
-		// On choisit la parcelle la plus critique ET dont je suis le plus proche
-		Area a = getAreaImTheClosestTo(areas, visibleDrones);
-
-		// décommenter les parties suivantes pour essayer des comportements aléatoires
-		// Comportement aléatoire 1
-//		         a = areas.get(amas.getRandom().nextInt(areas.size()));
-
-		// Comportement aléatoire 2
-//		        if (getCurrentArea().getX() == targetX && getCurrentArea().getY() == targetY) {
-//		            targetX = amas.getRandom().nextInt(World.WIDTH);
-//		            targetY = amas.getRandom().nextInt(World.HEIGHT);
-//		        }
-//		        a = amas.getEnvironment().getAreaByPosition(targetX, targetY);
-
-		droneDelegate.setTargetArea(a);
-
 		/* FIN DU CODE A COLLER */
 	}
 	
