@@ -89,7 +89,7 @@ public class DrAmas extends Amas<World> {
 		double sum = 0;
 		for (int x = 0; x < getEnvironment().getAreas()[0].length; x++) {
 			for (int y = 0; y < getEnvironment().getAreas().length; y++) {
-				double criticality = getEnvironment().getAreaByPosition(x, y).computeCriticality();
+				double criticality = getEnvironment().getAreaByPosition(x, y).computeEmergencyValue();
 				sum += criticality;
 				if (criticality > max)
 					max = criticality;

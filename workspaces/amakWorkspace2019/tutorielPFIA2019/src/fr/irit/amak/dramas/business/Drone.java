@@ -9,14 +9,7 @@ import fr.irit.smac.amak.Amas;
 
 public class Drone {
 
-	/**
-	 * Current coordinate of the drone
-	 */
-	protected int dx;
-	/**
-	 * Current coordinate of the drone
-	 */
-	protected int dy;
+	protected Position currentPosition;
 	/**
 	 * View radius of the agent. The drone will be able to perceive drones and areas
 	 * within a square of 3x3
@@ -45,21 +38,12 @@ public class Drone {
 	protected Area currentArea;
 
 	/**
-	 * Getter for the x coordinate
+	 * Getter for the coordinates
 	 * 
-	 * @return the x coordinate
+	 * @return the coordinates
 	 */
-	public int getX() {
-		return dx;
-	}
-
-	/**
-	 * Getter for the y coordinate
-	 * 
-	 * @return the y coordinate
-	 */
-	public int getY() {
-		return dy;
+	public Position getPosition() {
+		return currentPosition;
 	}
 
 	public Area getCurrentArea() {
@@ -96,12 +80,11 @@ public class Drone {
 	 * @return the distance between the drone and the area
 	 */
 	private double distanceTo(Area area) {
-		return Math.sqrt(Math.pow(area.getX() - dx, 2) + Math.pow(area.getY() - dy, 2));
+		return Math.sqrt(Math.pow(area.getCoordinates().getX() - currentPosition.getX(), 2) + Math.pow(area.getCoordinates().getY() - currentPosition.getY(), 2));
 	}
 
-	public void initPosition(int abs, int ord) {
-		dx = abs;
-		dy = ord;
+	public void initPosition(Position pos) {
+		currentPosition = pos;
 	}
 
 	public ActiveDrawableArea[][] getView() {
@@ -116,21 +99,14 @@ public class Drone {
 		targetArea = a;
 	}
 	/**
-	 * Move toward an area and scan the reached area. A drone can only move at 1
-	 * area /cycle so the target area may not be the one seen.
+	 * Move toward an area. A drone can only move at 1
+	 * position per cycle so the target area may not be the one seen.
 	 * 
 	 * @param a
 	 *            The target area
 	 */
 	public void moveToward(Area a) {
-		if (dx < a.getX())
-			dx++;
-		else if (dx > a.getX())
-			dx--;
-		if (dy < a.getY())
-			dy++;
-		else if (dy > a.getY())
-			dy--;
+		currentPosition.moveToward(a.getCoordinates());
 	}
 
 

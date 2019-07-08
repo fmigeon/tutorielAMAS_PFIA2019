@@ -18,12 +18,12 @@ public class ActiveDrawableArea extends DrawableArea {
 	 * Update the time since last scan at each cycle
 	 */
 	public void cycle() {
-		nextTimeSinceLastSeen++;
-		timeSinceLastSeen = nextTimeSinceLastSeen;
+		nextTimeSinceLastScan++;
+		timeSinceLastScan = nextTimeSinceLastScan;
 
-		if (timeSinceLastSeen > DEFAULT_SCAN_INTERVAL_TIME)
-			timeSinceLastSeen = DEFAULT_SCAN_INTERVAL_TIME;
-		drawable.setColor(new Color((float) timeSinceLastSeen / DEFAULT_SCAN_INTERVAL_TIME, 1 - (float) timeSinceLastSeen / DEFAULT_SCAN_INTERVAL_TIME, 0f));
+		if (timeSinceLastScan > DEFAULT_SCAN_INTERVAL_TIME)
+			timeSinceLastScan = DEFAULT_SCAN_INTERVAL_TIME;
+		drawable.setColor(new Color((float) timeSinceLastScan / DEFAULT_SCAN_INTERVAL_TIME, 1 - (float) timeSinceLastScan / DEFAULT_SCAN_INTERVAL_TIME, 0f));
 	}
 
 }
